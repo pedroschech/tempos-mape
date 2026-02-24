@@ -23,21 +23,25 @@
         .tab-btn.active { color: var(--deep-taupe); border-bottom: 4px solid var(--accent); }
 
         .container { padding: 20px; max-width: 600px; margin: auto; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--soft-pink); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--soft-pink); box-shadow: 0 4px 6px rgba(0,0,0,0.02); cursor: pointer; }
+        .recipe-img-card { width: 100%; border-radius: 10px; height: 180px; object-fit: cover; margin-bottom: 10px; }
         
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--soft-pink); border-radius: 10px; box-sizing: border-box; font-family: inherit; }
         .btn-main { background-color: var(--sage-green); color: #4A5D4A; border: none; padding: 12px; border-radius: 25px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
         .btn-sec { background: none; border: 1px solid var(--accent); color: var(--deep-taupe); padding: 8px; border-radius: 10px; cursor: pointer; margin-top: 5px; width: 100%; }
         
         .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: white; z-index: 1000; overflow-y: auto; display: none; }
-        .img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; background: #eee; display: flex; align-items: center; justify-content: center; }
+        .img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--soft-pink); }
         
-        .badge { padding: 8px 15px; border-radius: 20px; font-weight: bold; display: block; text-align: center; margin-top: 20px; }
-        .available { background: #E2F3E2; color: #2E7D32; }
-        .missing { background: #FFEBEE; color: #C62828; }
+        .badge { padding: 12px; border-radius: 15px; font-weight: bold; display: block; text-align: center; margin-top: 20px; }
+        .available { background: #E2F3E2; color: #2E7D32; border: 1px solid #C8E6C9; }
+        .missing { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
 
-        .item-row { display: flex; gap: 8px; align-items: center; background: #fdfdfd; padding: 10px; border-radius: 10px; margin-bottom: 5px; }
-        .del-btn { color: #E57373; cursor: pointer; font-weight: bold; border: none; background: none; padding: 5px; }
+        .item-row { display: flex; gap: 8px; align-items: center; background: #fdfdfd; padding: 10px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #f0f0f0; }
+        .del-btn { color: #E57373; cursor: pointer; font-weight: bold; border: none; background: none; padding: 5px; font-size: 1.2rem; }
+        
+        ul, ol { padding-left: 20px; }
+        li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -45,18 +49,18 @@
 <header><h1>Temperos MaPe</h1></header>
 
 <div class="nav-tabs">
-    <button class="tab-btn active" id="btn-tab-est" onclick="showTab('estoque')">Estoque</button>
-    <button class="tab-btn" id="btn-tab-rec" onclick="showTab('receitas')">Receitas</button>
+    <button class="tab-btn active" id="btn-tab-rec" onclick="showTab('receitas')">Receitas</button>
+    <button class="tab-btn" id="btn-tab-est" onclick="showTab('estoque')">Estoque</button>
 </div>
 
-<div id="estoque" class="container">
-    <button class="btn-main" onclick="abrirModal('modal-estoque')">+ Adicionar Item</button>
-    <div id="lista-estoque" style="margin-top:20px"></div>
-</div>
-
-<div id="receitas" class="container" style="display:none">
+<div id="receitas" class="container">
     <button class="btn-main" onclick="abrirModal('modal-receita')">+ Nova Receita</button>
     <div id="lista-receitas" style="margin-top:20px"></div>
+</div>
+
+<div id="estoque" class="container" style="display:none">
+    <button class="btn-main" onclick="abrirModal('modal-estoque')">+ Adicionar Item ao Estoque</button>
+    <div id="lista-estoque" style="margin-top:20px"></div>
 </div>
 
 <div id="modal-estoque" class="modal">
@@ -64,11 +68,11 @@
         <h3>Novo Item no Estoque</h3>
         <input type="text" id="est-nome" placeholder="Nome do item (ex: alho)">
         
-        <label>Foto:</label>
+        <label style="font-size: 0.8rem;">Foto do Produto:</label>
         <input type="file" id="est-file" accept="image/*" onchange="previewImg(this, 'preview-est')">
-        <div id="preview-est" class="img-preview">Sem foto</div>
+        <div id="preview-est" class="img-preview">Toque para selecionar foto</div>
 
-        <input type="number" id="est-qtd" placeholder="Quantidade">
+        <input type="number" id="est-qtd" placeholder="Quantidade disponível">
         
         <select id="est-un" onchange="checkOutro(this, 'div-outro-est')">
             <option value="unidade(s)">unidade(s)</option>
@@ -79,41 +83,46 @@
             <option value="Outro">Outro...</option>
         </select>
         <div id="div-outro-est" style="display:none">
-            <input type="text" id="est-un-outro" placeholder="Qual unidade? (ex: dente)">
+            <input type="text" id="est-un-outro" placeholder="Ex: dente, xícara...">
         </div>
 
-        <button class="btn-main" onclick="salvarEstoque()">Salvar Item</button>
-        <button class="btn-sec" onclick="fecharModais()">Cancelar</button>
+        <button class="btn-main" onclick="salvarEstoque()">Confirmar Estoque</button>
+        <button class="btn-sec" onclick="fecharModais()">Voltar</button>
     </div>
 </div>
 
 <div id="modal-receita" class="modal">
     <div class="container">
-        <h3>Nova Receita</h3>
-        <input type="text" id="rec-nome" placeholder="Nome da Delícia">
+        <h3>Cadastrar Receita</h3>
+        <input type="text" id="rec-nome" placeholder="Nome da Receita">
         
-        <label>Foto da Receita:</label>
+        <label style="font-size: 0.8rem;">Foto do Prato Pronto:</label>
         <input type="file" id="rec-file" accept="image/*" onchange="previewImg(this, 'preview-rec')">
-        <div id="preview-rec" class="img-preview">Sem foto</div>
+        <div id="preview-rec" class="img-preview">Toque para selecionar foto</div>
 
         <select id="rec-cat">
             <option value="Comidas">Comidas</option>
             <option value="Lanches">Lanches</option>
             <option value="Sobremesas">Sobremesas</option>
+            <option value="Outro" onchange="checkOutro(this, 'div-outro-cat')">Outro...</option>
         </select>
-
-        <h4>Ingredientes (Selecione do Estoque)</h4>
-        <div id="area-ingredientes"></div>
-        <button class="btn-sec" onclick="addLinhaIngrediente()">+ Ingrediente</button>
-
-        <h4>Passos da Preparação</h4>
-        <div id="area-passos">
-            <textarea class="passo-txt" placeholder="Passo 1"></textarea>
+        <div id="div-outro-cat" style="display:none">
+            <input type="text" id="rec-cat-outro" placeholder="Qual categoria?">
         </div>
-        <button class="btn-sec" onclick="addLinhaPasso()">+ Adicionar Passo</button>
 
-        <button class="btn-main" onclick="salvarReceita()">Salvar Receita</button>
-        <button class="btn-sec" onclick="fecharModais()">Sair</button>
+        <h4>Ingredientes necessários</h4>
+        <p style="font-size: 0.7rem; color: #888;">*Apenas itens cadastrados no estoque aparecem aqui.</p>
+        <div id="area-ingredientes"></div>
+        <button class="btn-sec" onclick="addLinhaIngrediente()">+ Adicionar Ingrediente</button>
+
+        <h4>Modo de Preparo</h4>
+        <div id="area-passos">
+            <textarea class="passo-txt" placeholder="Passo 1: Descreva o que fazer..."></textarea>
+        </div>
+        <button class="btn-sec" onclick="addLinhaPasso()">+ Adicionar Próximo Passo</button>
+
+        <button class="btn-main" onclick="salvarReceita()" style="margin-top: 30px;">Salvar no Caderno</button>
+        <button class="btn-sec" onclick="fecharModais()">Cancelar</button>
     </div>
 </div>
 
@@ -122,7 +131,7 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('mape_v2')) || { estoque: [], receitas: [] };
+    let db = JSON.parse(localStorage.getItem('mape_v3')) || { estoque: [], receitas: [] };
     let tempImg = "";
 
     function showTab(tab) {
@@ -144,14 +153,14 @@
     function fecharModais() { 
         document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
         tempImg = "";
-        document.querySelectorAll('.img-preview').forEach(p => p.innerHTML = "Sem foto");
+        document.querySelectorAll('.img-preview').forEach(p => p.innerHTML = "Toque para selecionar foto");
+        document.querySelectorAll('input, textarea').forEach(i => i.value = '');
     }
 
     function checkOutro(sel, divId) {
         document.getElementById(divId).style.display = sel.value === 'Outro' ? 'block' : 'none';
     }
 
-    // Processamento de Imagem (Leitura do arquivo local)
     function previewImg(input, previewId) {
         const file = input.files[0];
         const reader = new FileReader();
@@ -163,11 +172,11 @@
     }
 
     function salvarEstoque() {
-        const nome = document.getElementById('est-nome').value.toLowerCase();
+        const nome = document.getElementById('est-nome').value.toLowerCase().trim();
         const unBase = document.getElementById('est-un').value;
         const unidade = unBase === 'Outro' ? document.getElementById('est-un-outro').value : unBase;
         
-        if(!nome) return alert("Digite o nome do item");
+        if(!nome) return alert("Por favor, digite o nome do item.");
 
         db.estoque.push({
             id: Date.now(),
@@ -185,9 +194,9 @@
         div.className = 'item-row';
         let options = db.estoque.map(i => `<option value="${i.nome}">${i.nome}</option>`).join('');
         div.innerHTML = `
-            <select class="ing-sel" style="margin:0">${options ? options : '<option>Cadastre no estoque primeiro</option>'}</select>
-            <input type="number" class="ing-qtd" placeholder="Qtd" style="width:70px; margin:0">
-            <span class="del-btn" onclick="this.parentElement.remove()">X</span>
+            <select class="ing-sel" style="margin:0; flex: 2;">${options ? options : '<option>Cadastre itens no estoque primeiro!</option>'}</select>
+            <input type="number" class="ing-qtd" placeholder="Qtd" style="width:70px; margin:0; flex: 1;">
+            <span class="del-btn" onclick="this.parentElement.remove()">×</span>
         `;
         document.getElementById('area-ingredientes').appendChild(div);
     }
@@ -195,25 +204,28 @@
     function addLinhaPasso() {
         const t = document.createElement('textarea');
         t.className = 'passo-txt';
-        t.placeholder = "Próximo passo...";
+        t.placeholder = "Descreva o próximo passo...";
         document.getElementById('area-passos').appendChild(t);
     }
 
     function salvarReceita() {
-        const nome = document.getElementById('rec-nome').value;
-        if(!nome) return alert("Dê um nome para a receita");
+        const nome = document.getElementById('rec-nome').value.trim();
+        const catBase = document.getElementById('rec-cat').value;
+        const categoria = catBase === 'Outro' ? document.getElementById('rec-cat-outro').value : catBase;
+
+        if(!nome) return alert("A receita precisa de um nome!");
 
         const ings = Array.from(document.querySelectorAll('#area-ingredientes .item-row')).map(row => ({
             nome: row.querySelector('.ing-sel').value,
             qtd: parseFloat(row.querySelector('.ing-qtd').value) || 0
-        }));
+        })).filter(i => i.nome);
 
         const passos = Array.from(document.querySelectorAll('.passo-txt')).map(i => i.value).filter(v => v);
 
         db.receitas.push({
             id: Date.now(),
             nome,
-            categoria: document.getElementById('rec-cat').value,
+            categoria,
             foto: tempImg,
             ingredientes: ings,
             passos: passos
@@ -225,31 +237,45 @@
     function verReceita(id) {
         const r = db.receitas.find(x => x.id === id);
         let falta = [];
+        
         r.ingredientes.forEach(ing => {
             const est = db.estoque.find(e => e.nome === ing.nome);
-            if(!est || est.qtd < ing.qtd) falta.push(ing.nome);
+            if(!est || est.qtd < ing.qtd) {
+                const qtdFaltante = est ? (ing.qtd - est.qtd) : ing.qtd;
+                falta.push(`${ing.nome}`);
+            }
         });
 
         const statusHtml = falta.length === 0 
-            ? `<div class="badge available">✓ Temos tudo! Podemos fazer.</div>`
-            : `<div class="badge missing">✗ Falta no estoque: ${falta.join(', ')}</div>`;
+            ? `<div class="badge available">✓ Temos tudo no estoque!<br>Mãos à obra!</div>`
+            : `<div class="badge missing">✗ Falta no estoque para esta receita:<br>${falta.join(', ')}</div>`;
 
         document.getElementById('conteudo-detalhe').innerHTML = `
-            <button class="btn-sec" onclick="fecharModais()" style="width:auto">← Voltar</button>
-            <h2 style="font-family:'Playfair Display'">${r.nome}</h2>
-            ${r.foto ? `<img src="${r.foto}" style="width:100%; border-radius:15px; margin:10px 0">` : ''}
-            <h4>Ingredientes:</h4>
-            <ul>${r.ingredientes.map(i => `<li>${i.qtd} - ${i.nome}</li>`).join('')}</ul>
-            <h4>Modo de Preparo:</h4>
-            <ol>${r.passos.map(p => `<li style="margin-bottom:10px">${p}</li>`).join('')}</ol>
+            <button class="btn-sec" onclick="fecharModais()" style="width:auto; margin-bottom: 15px;">← Voltar para a lista</button>
+            <h2 style="font-family:'Playfair Display'; margin-bottom: 5px;">${r.nome}</h2>
+            <small style="color: var(--accent); display:block; margin-bottom: 15px;">Categoria: ${r.categoria}</small>
+            
+            ${r.foto ? `<img src="${r.foto}" style="width:100%; border-radius:15px; margin-bottom:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1)">` : ''}
+            
+            <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid var(--soft-pink); margin-bottom: 20px;">
+                <h4 style="margin-top:0">Ingredientes:</h4>
+                <ul>${r.ingredientes.map(i => `<li><b>${i.qtd}</b> de ${i.nome}</li>`).join('')}</ul>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 15px; border: 1px solid var(--soft-pink);">
+                <h4 style="margin-top:0">Modo de Preparo:</h4>
+                <ol>${r.passos.map(p => `<li style="margin-bottom:12px">${p}</li>`).join('')}</ol>
+            </div>
+
             ${statusHtml}
-            <button class="btn-sec" onclick="removerItem('receitas', ${r.id})" style="color:red; margin-top:30px; border-color:red">Excluir Receita</button>
+            
+            <button class="btn-sec" onclick="removerItem('receitas', ${r.id})" style="color:#E57373; margin-top:40px; border-color:#FFEBEE; font-size: 0.8rem;">Apagar esta receita para sempre</button>
         `;
         abrirModal('modal-detalhe');
     }
 
     function removerItem(tipo, id) {
-        if(confirm("Deseja mesmo excluir?")) {
+        if(confirm("Tem certeza que deseja remover este item?")) {
             db[tipo] = db[tipo].filter(x => x.id !== id);
             save();
             fecharModais();
@@ -257,33 +283,38 @@
     }
 
     function save() {
-        localStorage.setItem('mape_v2', JSON.stringify(db));
+        localStorage.setItem('mape_v3', JSON.stringify(db));
         render();
     }
 
     function render() {
+        // Render Estoque
         const estDiv = document.getElementById('lista-estoque');
-        estDiv.innerHTML = db.estoque.map(i => `
-            <div class="card" style="display:flex; align-items:center; gap:15px">
-                <img src="${i.foto || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:10px; object-fit:cover">
-                <div style="flex:1"><b>${i.nome}</b><br><small>${i.qtd} ${i.unidade}</small></div>
-                <button class="del-btn" onclick="removerItem('estoque', ${i.id})">🗑️</button>
+        estDiv.innerHTML = db.estoque.length ? db.estoque.map(i => `
+            <div class="card" style="display:flex; align-items:center; gap:15px; cursor: default;">
+                <img src="${i.foto || 'https://via.placeholder.com/50'}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; background: #eee;">
+                <div style="flex:1"><b>${i.nome.charAt(0).toUpperCase() + i.nome.slice(1)}</b><br><small style="color: #888;">${i.qtd} ${i.unidade}</small></div>
+                <button class="del-btn" onclick="removerItem('estoque', ${i.id})">🗑</button>
             </div>
-        `).join('');
+        `).join('') : '<p style="text-align:center; color:#999; margin-top:40px;">O estoque está vazio. Comece adicionando o que você tem em casa!</p>';
 
+        // Render Receitas
         const recDiv = document.getElementById('lista-receitas');
-        recDiv.innerHTML = db.receitas.map(r => `
+        recDiv.innerHTML = db.receitas.length ? db.receitas.map(r => `
             <div class="card" onclick="verReceita(${r.id})">
                 ${r.foto ? `<img src="${r.foto}" class="recipe-img-card">` : ''}
-                <div style="display:flex; justify-content:space-between">
-                    <b>${r.nome}</b>
-                    <small style="color:var(--accent)">${r.categoria}</small>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b style="font-size: 1.1rem;">${r.nome}</b>
+                    <small style="background: var(--soft-pink); padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">${r.categoria}</small>
                 </div>
             </div>
-        `).join('');
+        `).join('') : '<p style="text-align:center; color:#999; margin-top:40px;">Nenhuma receita por aqui ainda. Que tal cadastrar a primeira?</p>';
     }
 
-    window.onload = render;
+    // Inicialização
+    window.onload = () => {
+        showTab('receitas'); // Força abrir em receitas
+    };
 </script>
 
 </body>
