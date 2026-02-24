@@ -20,14 +20,12 @@
         .btn-main { background-color: var(--sage-green); color: #4A5D4A; border: none; padding: 12px; border-radius: 25px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
         .btn-sec { background: none; border: 1px solid var(--accent); color: var(--deep-taupe); padding: 8px; border-radius: 10px; cursor: pointer; margin-top: 5px; width: 100%; }
         .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: white; z-index: 1000; overflow-y: auto; display: none; }
-        .img-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--soft-pink); color: #999; font-size: 0.9rem; }
+        .img-preview { width: 100%; height: 200px; border-radius: 15px; margin-bottom: 10px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--soft-pink); color: #999; }
         .badge { padding: 12px; border-radius: 15px; font-weight: bold; display: block; text-align: center; margin-top: 20px; }
         .available { background: #E2F3E2; color: #2E7D32; border: 1px solid #C8E6C9; }
         .missing { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
         .item-row { display: flex; gap: 8px; align-items: center; background: #fdfdfd; padding: 10px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #f0f0f0; }
-        .action-btn { cursor: pointer; border: none; background: none; padding: 5px; font-size: 1.1rem; }
-        .del-btn { color: #E57373; }
-        .edit-btn { color: #7D6B5D; opacity: 0.7; }
+        .action-btn { cursor: pointer; border: none; background: none; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -39,31 +37,81 @@
     <button class="tab-btn" id="btn-tab-est" onclick="showTab('estoque')">Estoque</button>
 </div>
 
-<div id="receitas" class="container"><button class="btn-main" onclick="abrirModalReceita()">+ Nova Receita</button><div id="lista-receitas" style="margin-top:20px"></div></div>
-<div id="estoque" class="container" style="display:none"><button class="btn-main" onclick="abrirModalEstoque()">+ Adicionar ao Estoque</button><div id="lista-estoque" style="margin-top:20px"></div></div>
+<div id="receitas" class="container">
+    <button class="btn-main" onclick="abrirModalReceita()">+ Nova Receita</button>
+    <div id="lista-receitas" style="margin-top:20px">Carregando receitas...</div>
+</div>
 
-<div id="modal-estoque" class="modal"><div class="container"><h3 id="titulo-modal-est">Item no Estoque</h3><input type="hidden" id="est-id-edit"><input type="text" id="est-nome" placeholder="Nome do item"><input type="file" id="est-file" accept="image/*" onchange="previewImg(this, 'preview-est')"><div id="preview-est" class="img-preview">Toque para selecionar foto</div><input type="number" id="est-qtd" placeholder="Qtd"><select id="est-un" onchange="checkOutro(this, 'div-outro-est')"><option value="unidade(s)">unidade(s)</option><option value="grama(s) (g)">grama(s) (g)</option><option value="quilo(s) (kg)">quilo(s) (kg)</option><option value="mililitro(s) (ml)">mililitro(s) (ml)</option><option value="colher(es)">colher(es)</option><option value="Outro">Outro...</option></select><div id="div-outro-est" style="display:none"><input type="text" id="est-un-outro" placeholder="Qual unidade?"></div><button class="btn-main" onclick="salvarEstoque()">Confirmar</button><button class="btn-sec" onclick="fecharModais()">Voltar</button></div></div>
-<div id="modal-receita" class="modal"><div class="container"><h3 id="titulo-modal-rec">Cadastrar Receita</h3><input type="hidden" id="rec-id-edit"><input type="text" id="rec-nome" placeholder="Nome"><input type="file" id="rec-file" accept="image/*" onchange="previewImg(this, 'preview-rec')"><div id="preview-rec" class="img-preview">Foto</div><select id="rec-cat" onchange="checkOutro(this, 'div-outro-cat')"><option value="Comidas">Comidas</option><option value="Lanches">Lanches</option><option value="Café da manhã/tarde">Café da manhã/tarde</option><option value="Sobremesas">Sobremesas</option><option value="Outro">Outro...</option></select><div id="div-outro-cat" style="display:none"><input type="text" id="rec-cat-outro" placeholder="Categoria?"></div><h4>Ingredientes</h4><div id="area-ingredientes"></div><button class="btn-sec" onclick="addLinhaIngrediente()">+ Ingrediente</button><h4>Modo de Preparo</h4><div id="area-passos"></div><button class="btn-sec" onclick="addLinhaPasso()">+ Passo</button><button class="btn-main" onclick="salvarReceita()" style="margin-top:30px">Salvar</button><button class="btn-sec" onclick="fecharModais()">Cancelar</button></div></div>
+<div id="estoque" class="container" style="display:none">
+    <button class="btn-main" onclick="abrirModalEstoque()">+ Adicionar ao Estoque</button>
+    <div id="lista-estoque" style="margin-top:20px">Carregando estoque...</div>
+</div>
+
+<div id="modal-estoque" class="modal">
+    <div class="container">
+        <h3 id="titulo-modal-est">Item no Estoque</h3>
+        <input type="hidden" id="est-id-edit">
+        <input type="text" id="est-nome" placeholder="Nome do item">
+        <input type="file" id="est-file" accept="image/*" onchange="previewImg(this, 'preview-est')">
+        <div id="preview-est" class="img-preview">Toque para selecionar foto</div>
+        <input type="number" id="est-qtd" placeholder="Quantidade">
+        <select id="est-un" onchange="checkOutro(this, 'div-outro-est')">
+            <option value="unidade(s)">unidade(s)</option>
+            <option value="grama(s) (g)">grama(s) (g)</option>
+            <option value="quilo(s) (kg)">quilo(s) (kg)</option>
+            <option value="mililitro(s) (ml)">mililitro(s) (ml)</option>
+            <option value="colher(es)">colher(es)</option>
+            <option value="Outro">Outro...</option>
+        </select>
+        <div id="div-outro-est" style="display:none"><input type="text" id="est-un-outro" placeholder="Qual unidade?"></div>
+        <button class="btn-main" onclick="salvarEstoque()">Confirmar</button>
+        <button class="btn-sec" onclick="fecharModais()">Voltar</button>
+    </div>
+</div>
+
+<div id="modal-receita" class="modal">
+    <div class="container">
+        <h3 id="titulo-modal-rec">Cadastrar Receita</h3>
+        <input type="hidden" id="rec-id-edit">
+        <input type="text" id="rec-nome" placeholder="Nome da Receita">
+        <input type="file" id="rec-file" accept="image/*" onchange="previewImg(this, 'preview-rec')">
+        <div id="preview-rec" class="img-preview">Foto</div>
+        <select id="rec-cat" onchange="checkOutro(this, 'div-outro-cat')">
+            <option value="Comidas">Comidas</option>
+            <option value="Lanches">Lanches</option>
+            <option value="Café da manhã/tarde">Café da manhã/tarde</option>
+            <option value="Sobremesas">Sobremesas</option>
+            <option value="Outro">Outro...</option>
+        </select>
+        <div id="div-outro-cat" style="display:none"><input type="text" id="rec-cat-outro" placeholder="Qual categoria?"></div>
+        <h4>Ingredientes</h4>
+        <div id="area-ingredientes"></div>
+        <button class="btn-sec" onclick="addLinhaIngrediente()">+ Adicionar Ingrediente</button>
+        <h4>Modo de Preparo</h4>
+        <div id="area-passos"></div>
+        <button class="btn-sec" onclick="addLinhaPasso()">+ Adicionar Passo</button>
+        <button class="btn-main" onclick="salvarReceita()" style="margin-top:30px">Salvar Receita</button>
+        <button class="btn-sec" onclick="fecharModais()">Cancelar</button>
+    </div>
+</div>
+
 <div id="modal-detalhe" class="modal"><div id="conteudo-detalhe" class="container"></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
 <script>
-    // ==========================================
-    // COLE SUAS CONFIGURAÇÕES DO FIREBASE AQUI:
-    // ==========================================
+    // Configurações que você enviou
     const firebaseConfig = {
-  apiKey: "AIzaSyBbiM5dHIsbD7TPlPqVlifuHM5kdMrkqX8",
-  authDomain: "temperos-mape.firebaseapp.com",
-  databaseURL: "https://temperos-mape-default-rtdb.firebaseio.com",
-  projectId: "temperos-mape",
-  storageBucket: "temperos-mape.firebasestorage.app",
-  messagingSenderId: "924061436878",
-  appId: "1:924061436878:web:07f9e8caa2f37eaa6b799f",
-  measurementId: "G-DDS5VHNWKC"
-};
-    // ==========================================
+      apiKey: "AIzaSyBbiM5dHIsbD7TPlPqVlifuHM5kdMrkqX8",
+      authDomain: "temperos-mape.firebaseapp.com",
+      databaseURL: "https://temperos-mape-default-rtdb.firebaseio.com",
+      projectId: "temperos-mape",
+      storageBucket: "temperos-mape.firebasestorage.app",
+      messagingSenderId: "924061436878",
+      appId: "1:924061436878:web:07f9e8caa2f37eaa6b799f",
+      measurementId: "G-DDS5VHNWKC"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const dbRef = firebase.database().ref();
@@ -77,18 +125,20 @@
         if (data) {
             db.estoque = data.estoque ? Object.values(data.estoque) : [];
             db.receitas = data.receitas ? Object.values(data.receitas) : [];
-            render();
+        } else {
+            db = { estoque: [], receitas: [] };
         }
+        render();
     });
 
     function save() {
-        firebase.database().ref().set({
+        dbRef.set({
             estoque: db.estoque,
             receitas: db.receitas
         });
     }
 
-    // --- FUNÇÕES DE NAVEGAÇÃO E MODAIS (IGUAIS) ---
+    // --- FUNÇÕES GERAIS ---
     function showTab(tab) {
         document.getElementById('estoque').style.display = tab === 'estoque' ? 'block' : 'none';
         document.getElementById('receitas').style.display = tab === 'receitas' ? 'block' : 'none';
@@ -98,8 +148,11 @@
 
     function fecharModais() { 
         document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-        tempImg = ""; document.querySelectorAll('.img-preview').forEach(p => p.innerHTML = "Toque para selecionar foto");
+        tempImg = "";
+        document.querySelectorAll('.img-preview').forEach(p => p.innerHTML = "Toque para selecionar foto");
         document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+        document.getElementById('est-id-edit').value = '';
+        document.getElementById('rec-id-edit').value = '';
     }
 
     function previewImg(input, previewId) {
@@ -119,6 +172,24 @@
     // --- LÓGICA ESTOQUE ---
     function abrirModalEstoque() { fecharModais(); document.getElementById('titulo-modal-est').innerText = "Novo Item"; document.getElementById('modal-estoque').style.display = 'block'; }
     
+    function salvarEstoque() {
+        const idEdit = document.getElementById('est-id-edit').value;
+        const nome = document.getElementById('est-nome').value.toLowerCase().trim();
+        const unBase = document.getElementById('est-un').value;
+        const unidade = unBase === 'Outro' ? document.getElementById('est-un-outro').value : unBase;
+        if(!nome) return alert("Digite o nome!");
+
+        const item = { id: idEdit ? parseInt(idEdit) : Date.now(), nome, qtd: parseFloat(document.getElementById('est-qtd').value) || 0, unidade, foto: tempImg };
+
+        if(idEdit) {
+            const idx = db.estoque.findIndex(i => i.id === parseInt(idEdit));
+            db.estoque[idx] = item;
+        } else {
+            db.estoque.push(item);
+        }
+        save(); fecharModais();
+    }
+
     function editarEstoque(id) {
         const item = db.estoque.find(i => i.id === id);
         abrirModalEstoque();
@@ -127,22 +198,6 @@
         document.getElementById('est-qtd').value = item.qtd;
         tempImg = item.foto;
         if(tempImg) document.getElementById('preview-est').innerHTML = `<img src="${tempImg}" style="width:100%; height:100%; object-fit:cover; border-radius:15px">`;
-    }
-
-    function salvarEstoque() {
-        const idEdit = document.getElementById('est-id-edit').value;
-        const nome = document.getElementById('est-nome').value.toLowerCase().trim();
-        const unBase = document.getElementById('est-un').value;
-        const unidade = unBase === 'Outro' ? document.getElementById('est-un-outro').value : unBase;
-        const dados = { id: idEdit ? parseInt(idEdit) : Date.now(), nome, qtd: parseFloat(document.getElementById('est-qtd').value) || 0, unidade, foto: tempImg };
-
-        if(idEdit) {
-            const idx = db.estoque.findIndex(i => i.id === parseInt(idEdit));
-            db.estoque[idx] = dados;
-        } else {
-            db.estoque.push(dados);
-        }
-        save(); fecharModais();
     }
 
     // --- LÓGICA RECEITA ---
@@ -157,7 +212,7 @@
     function addLinhaIngrediente(nome = '', qtd = '') {
         const div = document.createElement('div'); div.className = 'item-row';
         let options = db.estoque.map(i => `<option value="${i.nome}" ${i.nome === nome ? 'selected' : ''}>${i.nome}</option>`).join('');
-        div.innerHTML = `<select class="ing-sel" style="flex:2">${options}</select><input type="number" class="ing-qtd" value="${qtd}" style="width:70px; flex:1"><span class="action-btn del-btn" onclick="this.parentElement.remove()">×</span>`;
+        div.innerHTML = `<select class="ing-sel" style="flex:2">${options || '<option>Cadastre no estoque primeiro!</option>'}</select><input type="number" class="ing-qtd" value="${qtd}" style="width:70px; flex:1"><span class="action-btn" onclick="this.parentElement.remove()">×</span>`;
         document.getElementById('area-ingredientes').appendChild(div);
     }
 
@@ -176,13 +231,15 @@
             qtd: parseFloat(row.querySelector('.ing-qtd').value) || 0
         }));
         const passos = Array.from(document.querySelectorAll('.passo-txt')).map(i => i.value).filter(v => v);
-        const dados = { id: idEdit ? parseInt(idEdit) : Date.now(), nome, categoria, foto: tempImg, ingredientes: ings, passos: passos };
+        
+        if(!nome) return alert("Dê um nome à receita!");
+        const rec = { id: idEdit ? parseInt(idEdit) : Date.now(), nome, categoria, foto: tempImg, ingredientes: ings, passos: passos };
 
         if(idEdit) {
             const idx = db.receitas.findIndex(r => r.id === parseInt(idEdit));
-            db.receitas[idx] = dados;
+            db.receitas[idx] = rec;
         } else {
-            db.receitas.push(dados);
+            db.receitas.push(rec);
         }
         save(); fecharModais();
     }
@@ -199,11 +256,11 @@
             <button class="btn-sec" onclick="fecharModais()">← Voltar</button>
             <button class="btn-sec" onclick="editarReceita(${r.id})">✏️ Editar</button>
             <h2>${r.nome}</h2>
-            ${r.foto ? `<img src="${r.foto}" style="width:100%; border-radius:15px">` : ''}
+            ${r.foto ? `<img src="${r.foto}" style="width:100%; border-radius:15px; margin-bottom:15px">` : ''}
             <h4>Ingredientes:</h4><ul>${r.ingredientes.map(i => `<li>${i.qtd} de ${i.nome}</li>`).join('')}</ul>
-            <h4>Modo de Preparo:</h4><ol>${r.passos.map(p => `<li>${p}</li>`).join('')}</ol>
+            <h4>Preparo:</h4><ol>${r.passos.map(p => `<li>${p}</li>`).join('')}</ol>
             ${statusHtml}
-            <button class="btn-sec" onclick="removerItem('receitas', ${r.id})" style="color:red">Excluir</button>`;
+            <button class="btn-sec" onclick="removerItem('receitas', ${r.id})" style="color:red; margin-top:30px">Excluir Receita</button>`;
         document.getElementById('modal-detalhe').style.display = 'block';
     }
 
@@ -220,7 +277,7 @@
     }
 
     function removerItem(tipo, id) {
-        if(confirm("Remover?")) {
+        if(confirm("Deseja apagar?")) {
             db[tipo] = db[tipo].filter(x => x.id !== id);
             save(); fecharModais();
         }
@@ -228,11 +285,13 @@
 
     function render() {
         const estDiv = document.getElementById('lista-estoque');
-        estDiv.innerHTML = db.estoque.map(i => `<div class="card" style="display:flex; align-items:center; gap:15px"><img src="${i.foto || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:10px; object-fit:cover"><div style="flex:1"><b>${i.nome}</b><br><small>${i.qtd} ${i.unidade}</small></div><button class="action-btn edit-btn" onclick="editarEstoque(${i.id})">✏️</button><button class="action-btn del-btn" onclick="removerItem('estoque', ${i.id})">🗑</button></div>`).join('') || 'Vazio';
+        estDiv.innerHTML = db.estoque.map(i => `<div class="card" style="display:flex; align-items:center; gap:15px"><img src="${i.foto || ''}" style="width:50px; height:50px; border-radius:10px; object-fit:cover; background:#eee"><div style="flex:1"><b>${i.nome}</b><br><small>${i.qtd} ${i.unidade}</small></div><button class="action-btn" onclick="editarEstoque(${i.id})">✏️</button><button class="action-btn" onclick="removerItem('estoque', ${i.id})">🗑</button></div>`).join('') || 'Estoque vazio.';
         
         const recDiv = document.getElementById('lista-receitas');
-        recDiv.innerHTML = db.receitas.map(r => `<div class="card" onclick="verReceita(${r.id})">${r.foto ? `<img src="${r.foto}" class="recipe-img-card">` : ''}<b>${r.nome}</b></div>`).join('') || 'Nenhuma receita';
+        recDiv.innerHTML = db.receitas.map(r => `<div class="card" onclick="verReceita(${r.id})">${r.foto ? `<img src="${r.foto}" class="recipe-img-card">` : ''}<b>${r.nome}</b><br><small>${r.categoria}</small></div>`).join('') || 'Nenhuma receita.';
     }
+
+    window.onload = () => showTab('receitas');
 </script>
 </body>
 </html>
