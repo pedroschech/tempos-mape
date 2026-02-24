@@ -3,115 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tempos MaPe | Nosso Cardápio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <title>Tempos MaPe | Receitas e Afeto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --pastel-pink: #F7E1D7;
-            --pastel-green: #D4E2D4;
-            --accent-color: #9A7E6F;
-            --bg-color: #FFFBFA;
-            --text-color: #5D5D5D;
+            --soft-pink: #F9EAE1;
+            --sage-green: #D4E2D4;
+            --deep-taupe: #7D6B5D;
+            --cream: #FFFBFA;
+            --accent: #E8B4B8;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--cream);
+            color: var(--deep-taupe);
             margin: 0;
-            padding-bottom: 60px;
+            padding-bottom: 80px;
         }
 
         header {
-            background-color: var(--pastel-pink);
-            padding: 2rem;
+            background-color: var(--soft-pink);
+            padding: 30px 15px;
             text-align: center;
-            border-bottom: 2px solid #eee;
+            border-bottom: 3px solid var(--accent);
         }
 
-        h1 {
-            font-family: 'Playfair Display', serif;
-            color: var(--accent-color);
-            margin: 0;
-            font-style: italic;
-        }
+        h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; margin: 0; color: var(--deep-taupe); }
+        h2 { font-family: 'Playfair Display', serif; border-bottom: 1px solid var(--accent); padding-bottom: 5px; }
 
         .nav-tabs {
             display: flex;
-            justify-content: center;
+            justify-content: space-around;
             background: white;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .tab-btn {
-            padding: 15px 20px;
+            flex: 1;
+            padding: 15px;
             border: none;
             background: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #A0A0A0;
             cursor: pointer;
-            font-weight: bold;
-            color: #888;
+            transition: 0.3s;
         }
 
-        .tab-btn.active {
-            color: var(--accent-color);
-            border-bottom: 3px solid var(--pastel-pink);
-        }
+        .tab-btn.active { color: var(--deep-taupe); border-bottom: 4px solid var(--accent); }
 
-        .container {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-        }
+        .container { padding: 20px; max-width: 600px; margin: auto; }
 
         .card {
             background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border: 1px solid #f0f0f0;
-        }
-
-        /* Botões Estilizados */
-        .btn-add {
-            background-color: var(--pastel-green);
-            border: none;
-            padding: 10px 20px;
             border-radius: 20px;
-            color: #4A5D4A;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid var(--soft-pink);
+            position: relative;
         }
 
+        .recipe-img { width: 100%; border-radius: 15px; margin-bottom: 10px; height: 180px; object-fit: cover; }
+
+        /* Inputs Estilizados */
         input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 15px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
+            width: 100%; padding: 12px; margin: 8px 0;
+            border: 1px solid var(--soft-pink); border-radius: 10px;
+            background: #fff; font-family: inherit;
         }
+
+        .btn-main {
+            background-color: var(--sage-green); color: #4A5D4A;
+            border: none; padding: 12px 25px; border-radius: 25px;
+            font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px;
+        }
+
+        .btn-secondary { background: var(--soft-pink); color: var(--deep-taupe); border: none; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+
+        .badge { padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; }
+        .available { background: #E2F3E2; color: #2E7D32; }
+        .missing { background: #FFEBEE; color: #C62828; }
 
         .hidden { display: none; }
         
-        .recipe-img { width: 100%; border-radius: 10px; height: 150px; object-fit: cover; }
-        
-        .stock-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* Modal Style */
+        .modal {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: white; z-index: 1000; overflow-y: auto;
+            padding-top: 20px;
         }
+
+        .item-row { display: flex; gap: 10px; align-items: center; }
+        .delete-btn { color: #E57373; cursor: pointer; font-weight: bold; padding: 5px; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Tempos MaPe</h1>
-    <p>Cozinhando histórias juntos</p>
+    <p style="margin: 5px 0 0; opacity: 0.8;">Nosso cantinho de receitas</p>
 </header>
 
 <div class="nav-tabs">
@@ -121,40 +116,72 @@
 </div>
 
 <div id="cardapio" class="container tab-content">
-    <h2>O que vamos comer?</h2>
-    <button class="btn-add" onclick="sortearReceita()">🎲 Sugestão Aleatória</button>
+    <button class="btn-main" onclick="sortearReceita()" style="background: var(--accent); color: white; margin-bottom: 25px;">🎲 O que vamos jantar hoje?</button>
     <div id="lista-cardapio"></div>
 </div>
 
 <div id="estoque" class="container tab-content hidden">
-    <h2>Nosso Estoque</h2>
-    <button class="btn-add" onclick="toggleModal('modal-estoque')">+ Novo Item</button>
-    <div id="lista-estoque"></div>
+    <h2>🏠 Nosso Estoque</h2>
+    <button class="btn-main" onclick="abrirModalEstoque()">+ Adicionar Item</button>
+    <div id="lista-estoque" style="margin-top: 20px;"></div>
 </div>
 
 <div id="receitas" class="container tab-content hidden">
-    <h2>Caderno de Receitas</h2>
-    <button class="btn-add" onclick="toggleModal('modal-receita')">+ Nova Receita</button>
-    <div id="lista-receitas"></div>
+    <h2>📖 Minhas Receitas</h2>
+    <button class="btn-main" onclick="abrirModalReceita()">+ Nova Receita</button>
+    <div id="lista-receitas" style="margin-top: 20px;"></div>
 </div>
 
-<div id="modal-estoque" class="container hidden" style="background: #fff; position: fixed; top:0; left:0; height:100%; z-index:200;">
-    <h3>Adicionar ao Estoque</h3>
-    <input type="text" id="est-nome" placeholder="Nome do Item (ex: Tomate)">
-    <input type="number" id="est-qtd" placeholder="Quantidade">
-    <select id="est-unidade">
-        <option value="Un">Unidades</option>
-        <option value="g">Gramas (g)</option>
-        <option value="kg">Quilos (kg)</option>
-        <option value="ml">Mililitros (ml)</option>
-        <option value="Outros">Outros</option>
-    </select>
-    <button class="btn-add" onclick="salvarEstoque()">Salvar</button>
-    <button onclick="toggleModal('modal-estoque')">Cancelar</button>
+<div id="modal-estoque" class="modal hidden">
+    <div class="container">
+        <h3>Novo Item no Estoque</h3>
+        <input type="text" id="est-nome" placeholder="Ex: Tomate">
+        <input type="number" id="est-qtd" placeholder="Quantidade">
+        <select id="est-unidade">
+            <option value="Un">Unidades</option>
+            <option value="g">Gramas (g)</option>
+            <option value="kg">Quilos (kg)</option>
+            <option value="ml">Mililitros (ml)</option>
+            <option value="colher">Colher</option>
+        </select>
+        <p>Foto (Opcional): <input type="text" id="est-foto" placeholder="URL da imagem"></p>
+        <button class="btn-main" onclick="salvarEstoque()">Salvar no Estoque</button>
+        <button class="btn-secondary" onclick="fecharModais()" style="width: 100%; margin-top: 10px;">Voltar</button>
+    </div>
+</div>
+
+<div id="modal-receita" class="modal hidden">
+    <div class="container">
+        <h3>Nova Receita</h3>
+        <input type="text" id="rec-nome" placeholder="Nome da Receita">
+        <select id="rec-cat">
+            <option value="Comidas">Comidas</option>
+            <option value="Lanches">Lanches</option>
+            <option value="Sobremesas">Sobremesas</option>
+        </select>
+        <input type="text" id="rec-foto" placeholder="URL da Foto">
+        
+        <h4>Ingredientes</h4>
+        <div id="inputs-ingredientes">
+            <div class="item-row">
+                <input type="text" placeholder="Ingrediente" class="ing-nome">
+                <input type="number" placeholder="Qtd" style="width: 80px;" class="ing-qtd">
+            </div>
+        </div>
+        <button class="btn-secondary" onclick="addCampoIngrediente()">+ Mais Ingrediente</button>
+
+        <h4>Passo a Passo</h4>
+        <div id="inputs-passos">
+            <textarea placeholder="Passo 1" class="rec-passo"></textarea>
+        </div>
+        <button class="btn-secondary" onclick="addCampoPasso()">+ Próximo Passo</button>
+
+        <button class="btn-main" onclick="salvarReceita()" style="margin-top: 30px;">Salvar Receita</button>
+        <button class="btn-secondary" onclick="fecharModais()" style="width: 100%; margin-top: 10px;">Cancelar</button>
+    </div>
 </div>
 
 <script>
-    // Lógica básica de persistência e navegação
     let db = JSON.parse(localStorage.getItem('mape_db')) || { estoque: [], receitas: [] };
 
     function showTab(tabId) {
@@ -165,20 +192,135 @@
         render();
     }
 
-    function toggleModal(id) {
-        document.getElementById(id).classList.toggle('hidden');
-    }
+    // --- FUNÇÕES DE ESTOQUE ---
+    function abrirModalEstoque() { document.getElementById('modal-estoque').classList.remove('hidden'); }
 
     function salvarEstoque() {
-        const item = {
+        const nome = document.getElementById('est-nome').value;
+        const qtd = parseFloat(document.getElementById('est-qtd').value);
+        if(!nome || !qtd) return alert("Preencha nome e quantidade!");
+
+        db.estoque.push({
             id: Date.now(),
-            nome: document.getElementById('est-nome').value,
-            qtd: document.getElementById('est-qtd').value,
-            un: document.getElementById('est-unidade').value
-        };
-        db.estoque.push(item);
+            nome: nome.toLowerCase(),
+            qtd: qtd,
+            un: document.getElementById('est-unidade').value,
+            foto: document.getElementById('est-foto').value || 'https://via.placeholder.com/50'
+        });
         atualizarDB();
-        toggleModal('modal-estoque');
+        fecharModais();
+    }
+
+    // --- FUNÇÕES DE RECEITA ---
+    function abrirModalReceita() { document.getElementById('modal-receita').classList.remove('hidden'); }
+
+    function addCampoIngrediente() {
+        const div = document.createElement('div');
+        div.className = 'item-row';
+        div.innerHTML = '<input type="text" placeholder="Ingrediente" class="ing-nome"><input type="number" placeholder="Qtd" style="width: 80px;" class="ing-qtd">';
+        document.getElementById('inputs-ingredientes').appendChild(div);
+    }
+
+    function addCampoPasso() {
+        const txt = document.createElement('textarea');
+        txt.className = 'rec-passo';
+        txt.placeholder = "Próximo passo...";
+        document.getElementById('inputs-passos').appendChild(txt);
+    }
+
+    function salvarReceita() {
+        const nome = document.getElementById('rec-nome').value;
+        if(!nome) return alert("Dê um nome à receita!");
+
+        const ings = [];
+        document.querySelectorAll('#inputs-ingredientes .item-row').forEach(row => {
+            const n = row.querySelector('.ing-nome').value.toLowerCase();
+            const q = row.querySelector('.ing-qtd').value;
+            if(n) ings.push({ nome: n, qtd: parseFloat(q) });
+        });
+
+        const passos = Array.from(document.querySelectorAll('.rec-passo')).map(t => t.value).filter(v => v);
+
+        db.receitas.push({
+            id: Date.now(),
+            nome,
+            categoria: document.getElementById('rec-cat').value,
+            foto: document.getElementById('rec-foto').value,
+            ingredientes: ings,
+            passos: passos
+        });
+
+        atualizarDB();
+        fecharModais();
+    }
+
+    // --- LÓGICA DE VERIFICAÇÃO DE ESTOQUE ---
+    function verificarDisponibilidade(receita) {
+        let faltando = [];
+        receita.ingredientes.forEach(ingReq => {
+            const noEstoque = db.estoque.find(e => e.nome === ingReq.nome);
+            if (!noEstoque || noEstoque.qtd < ingReq.qtd) {
+                faltando.push(ingReq.nome);
+            }
+        });
+        return faltando;
+    }
+
+    function render() {
+        // Render Estoque
+        const listaEst = document.getElementById('lista-estoque');
+        listaEst.innerHTML = db.estoque.map(item => `
+            <div class="card" style="display:flex; align-items:center; gap:15px; padding: 10px;">
+                <img src="${item.foto}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                <div style="flex:1"><b>${item.nome.toUpperCase()}</b><br>${item.qtd} ${item.un}</div>
+                <div class="delete-btn" onclick="removerItem('estoque', ${item.id})">🗑️</div>
+            </div>
+        `).join('');
+
+        // Render Receitas
+        const listaRec = document.getElementById('lista-receitas');
+        listaRec.innerHTML = db.receitas.map(r => `
+            <div class="card">
+                ${r.foto ? `<img src="${r.foto}" class="recipe-img">` : ''}
+                <h3>${r.nome}</h3>
+                <small>${r.categoria}</small>
+                <div class="delete-btn" style="position:absolute; top:20px; right:20px" onclick="removerItem('receitas', ${r.id})">🗑️</div>
+            </div>
+        `).join('');
+
+        // Render Cardápio (A Mágica)
+        const listaCard = document.getElementById('lista-cardapio');
+        listaCard.innerHTML = db.receitas.map(r => {
+            const faltam = verificarDisponibilidade(r);
+            const status = faltam.length === 0 
+                ? `<span class="badge available">✓ Pode fazer</span>` 
+                : `<span class="badge missing">✗ Falta: ${faltam.join(', ')}</span>`;
+            
+            return `
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h3 style="margin:0">${r.nome}</h3>
+                            <p style="font-size:0.8rem; margin:5px 0">${r.categoria}</p>
+                        </div>
+                        ${status}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function removerItem(tipo, id) {
+        if(confirm("Tem certeza?")) {
+            db[tipo] = db[tipo].filter(x => x.id !== id);
+            atualizarDB();
+        }
+    }
+
+    function fecharModais() {
+        document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+        // Limpa campos
+        document.querySelectorAll('input').forEach(i => i.value = '');
     }
 
     function atualizarDB() {
@@ -186,35 +328,10 @@
         render();
     }
 
-    function render() {
-        // Renderiza estoque
-        const divEstoque = document.getElementById('lista-estoque');
-        divEstoque.innerHTML = db.estoque.map(item => `
-            <div class="card stock-item">
-                <span><b>${item.nome}</b>: ${item.qtd} ${item.un}</span>
-                <button onclick="removerEstoque(${item.id})" style="color:red; border:none; background:none;">X</button>
-            </div>
-        `).join('');
-
-        // Renderiza cardápio (Resumo)
-        const divCardapio = document.getElementById('lista-cardapio');
-        divCardapio.innerHTML = db.receitas.map(r => `
-            <div class="card">
-                <h3>${r.nome}</h3>
-                <p>Status: <span style="color: green">Disponível (Exemplo)</span></p>
-            </div>
-        `).join('');
-    }
-
-    function removerEstoque(id) {
-        db.estoque = db.estoque.filter(i => i.id !== id);
-        atualizarDB();
-    }
-
     function sortearReceita() {
         if(db.receitas.length === 0) return alert("Cadastre receitas primeiro!");
         const sorteada = db.receitas[Math.floor(Math.random() * db.receitas.length)];
-        alert("Sugestão de hoje: " + sorteada.nome);
+        alert("Que tal fazer: " + sorteada.nome + "?");
     }
 
     window.onload = render;
