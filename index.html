@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempos MaPe | Nosso Cardápio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pastel-pink: #F7E1D7;
+            --pastel-green: #D4E2D4;
+            --accent-color: #9A7E6F;
+            --bg-color: #FFFBFA;
+            --text-color: #5D5D5D;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background-color: var(--pastel-pink);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent-color);
+            margin: 0;
+            font-style: italic;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn {
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #888;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom: 3px solid var(--pastel-pink);
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #f0f0f0;
+        }
+
+        /* Botões Estilizados */
+        .btn-add {
+            background-color: var(--pastel-green);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #4A5D4A;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .hidden { display: none; }
+        
+        .recipe-img { width: 100%; border-radius: 10px; height: 150px; object-fit: cover; }
+        
+        .stock-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Tempos MaPe</h1>
+    <p>Cozinhando histórias juntos</p>
+</header>
+
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('cardapio')">Cardápio</button>
+    <button class="tab-btn" onclick="showTab('estoque')">Estoque</button>
+    <button class="tab-btn" onclick="showTab('receitas')">Receitas</button>
+</div>
+
+<div id="cardapio" class="container tab-content">
+    <h2>O que vamos comer?</h2>
+    <button class="btn-add" onclick="sortearReceita()">🎲 Sugestão Aleatória</button>
+    <div id="lista-cardapio"></div>
+</div>
+
+<div id="estoque" class="container tab-content hidden">
+    <h2>Nosso Estoque</h2>
+    <button class="btn-add" onclick="toggleModal('modal-estoque')">+ Novo Item</button>
+    <div id="lista-estoque"></div>
+</div>
+
+<div id="receitas" class="container tab-content hidden">
+    <h2>Caderno de Receitas</h2>
+    <button class="btn-add" onclick="toggleModal('modal-receita')">+ Nova Receita</button>
+    <div id="lista-receitas"></div>
+</div>
+
+<div id="modal-estoque" class="container hidden" style="background: #fff; position: fixed; top:0; left:0; height:100%; z-index:200;">
+    <h3>Adicionar ao Estoque</h3>
+    <input type="text" id="est-nome" placeholder="Nome do Item (ex: Tomate)">
+    <input type="number" id="est-qtd" placeholder="Quantidade">
+    <select id="est-unidade">
+        <option value="Un">Unidades</option>
+        <option value="g">Gramas (g)</option>
+        <option value="kg">Quilos (kg)</option>
+        <option value="ml">Mililitros (ml)</option>
+        <option value="Outros">Outros</option>
+    </select>
+    <button class="btn-add" onclick="salvarEstoque()">Salvar</button>
+    <button onclick="toggleModal('modal-estoque')">Cancelar</button>
+</div>
+
+<script>
+    // Lógica básica de persistência e navegação
+    let db = JSON.parse(localStorage.getItem('mape_db')) || { estoque: [], receitas: [] };
+
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.remove('hidden');
+        event.currentTarget.classList.add('active');
+        render();
+    }
+
+    function toggleModal(id) {
+        document.getElementById(id).classList.toggle('hidden');
+    }
+
+    function salvarEstoque() {
+        const item = {
+            id: Date.now(),
+            nome: document.getElementById('est-nome').value,
+            qtd: document.getElementById('est-qtd').value,
+            un: document.getElementById('est-unidade').value
+        };
+        db.estoque.push(item);
+        atualizarDB();
+        toggleModal('modal-estoque');
+    }
+
+    function atualizarDB() {
+        localStorage.setItem('mape_db', JSON.stringify(db));
+        render();
+    }
+
+    function render() {
+        // Renderiza estoque
+        const divEstoque = document.getElementById('lista-estoque');
+        divEstoque.innerHTML = db.estoque.map(item => `
+            <div class="card stock-item">
+                <span><b>${item.nome}</b>: ${item.qtd} ${item.un}</span>
+                <button onclick="removerEstoque(${item.id})" style="color:red; border:none; background:none;">X</button>
+            </div>
+        `).join('');
+
+        // Renderiza cardápio (Resumo)
+        const divCardapio = document.getElementById('lista-cardapio');
+        divCardapio.innerHTML = db.receitas.map(r => `
+            <div class="card">
+                <h3>${r.nome}</h3>
+                <p>Status: <span style="color: green">Disponível (Exemplo)</span></p>
+            </div>
+        `).join('');
+    }
+
+    function removerEstoque(id) {
+        db.estoque = db.estoque.filter(i => i.id !== id);
+        atualizarDB();
+    }
+
+    function sortearReceita() {
+        if(db.receitas.length === 0) return alert("Cadastre receitas primeiro!");
+        const sorteada = db.receitas[Math.floor(Math.random() * db.receitas.length)];
+        alert("Sugestão de hoje: " + sorteada.nome);
+    }
+
+    window.onload = render;
+</script>
+
+</body>
+</html>
